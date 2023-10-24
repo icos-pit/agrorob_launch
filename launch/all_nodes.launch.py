@@ -1,15 +1,13 @@
 from launch import LaunchDescription
+from launch.substitutions import TextSubstitution, LaunchConfiguration
 from launch_ros.actions import Node 
-from launch.actions import ExecuteProcess
-from launch.actions import DeclareLaunchArgument
-from launch.actions import IncludeLaunchDescription
+from launch.actions import IncludeLaunchDescription, ExecuteProcess, DeclareLaunchArgument
 from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
-from ament_index_python import get_package_share_directory
-from launch.substitutions import LaunchConfiguration
-import os
+from ament_index_python.packages import get_package_share_directory
 
+import os
 import subprocess
-from getpass import getpass
+
 
 def check_can0_interface():
 
@@ -26,40 +24,72 @@ def check_can0_interface():
 
 
 def generate_launch_description():
+    
+    check_can0_interface()
 
-    use_sim_time = LaunchConfiguration('use_sim_time', default='false')
+    joy_config = LaunchConfiguration('joy_config')
+    joy_dev = LaunchConfiguration('joy_dev')
+    config_filepath = LaunchConfiguration('config_filepath')
 
-    # Get the path to the can_interface_check.py script within the package
-    # package_share_dir = os.path.join(os.path.dirname(__file__), '..', 'share', 'agrorob_launch')
-    # check_script_path = os.path.join(package_share_dir, 'launch/can_interface_check.py')
-
-    # Call the function to check the can0 interface
-    # check_can0_interface_action = ExecuteProcess(
-    #     cmd=["python3", check_script_path],
-    #     output='screen'
-    # )
 
     return LaunchDescription([
-        check_can0_interface(),
+
+        DeclareLaunchArgument('joy_vel', default_value='cmd_vel'),
+        DeclareLaunchArgument('joy_config', default_value='xbox'),
+        DeclareLaunchArgument('joy_dev', default_value='/dev/input/js0'),
+        DeclareLaunchArgument('config_filepath', default_value=[
+        TextSubstitution(text=os.path.join( get_package_share_directory('teleop_twist_joy'), 'config', '')),
+        joy_config, TextSubstitution(text='.config.yaml')]),
+        
+        
         DeclareLaunchArgument(
             'use_sim_time',
             default_value='false',
             description='Use simulation (Gazebo) clock if true'),
+
+
         Node(
             package='agrorob_driver',
             executable='agrorob_interface',
             name='agrorob_interface'
         ),
+
         Node(
-            package='joy',
-            executable='joy_node',
-            name='joy_node'
+            package='joy', 
+            executable='joy_node', 
+            name='joy_node',
+            parameters=[{
+                'dev': joy_dev,
+                'deadzone': 0.3,
+                'autorepeat_rate': 20.0,
+        }]),
+
+        Node(
+            package='teleop_twist_joy', 
+            executable='teleop_node',
+            name='teleop_twist_joy_node', 
+            parameters=[config_filepath],
+            remappings={('/cmd_vel', LaunchConfiguration('joy_vel'))}
         ),
+
+        ExecuteProcess(
+            cmd=["ros2", "param", "set", "/teleop_twist_joy_node", "axis_angular.yaw", "3"],
+            output='screen'
+        ),
+
+        ## uncomment if wheel turning oposite direction
+        # ExecuteProcess(
+        #     cmd=["ros2", "param", "set", "/teleop_twist_joy_node", "inverted_reverse", "true"],
+        #     output='screen'
+        # ),
+
+
         IncludeLaunchDescription(
             XMLLaunchDescriptionSource(
                 os.path.join(get_package_share_directory('ros2_socketcan'),
                              'launch/socket_can_bridge.launch.xml')
-            )
+            ),
         ),
+ 
     ])
 

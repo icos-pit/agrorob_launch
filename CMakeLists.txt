@@ -11,6 +11,7 @@ find_package(rclpy REQUIRED)
 find_package(ros2_socketcan REQUIRED)
 find_package(agrorob_driver REQUIRED)
 find_package(joy REQUIRED)
+find_package(teleop_twist_joy REQUIRED)
 
 install(DIRECTORY
   launch
