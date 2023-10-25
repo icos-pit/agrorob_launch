@@ -51,8 +51,11 @@ def generate_launch_description():
         Node(
             package='agrorob_driver',
             executable='agrorob_interface',
-            name='agrorob_interface'
-        ),
+            name='agrorob_interface',
+            parameters=[{
+                'joy_wire': 1,
+               
+        }]),
 
         Node(
             package='joy', 
