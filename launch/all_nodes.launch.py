@@ -52,20 +52,17 @@ def generate_launch_description():
             package='agrorob_driver',
             executable='agrorob_interface',
             name='agrorob_interface',
-            parameters=[{
-                'joy_wire': 1,
-               
-        }]),
+        ),
 
-        Node(
-            package='joy', 
-            executable='joy_node', 
-            name='joy_node',
-            parameters=[{
-                'dev': joy_dev,
-                'deadzone': 0.3,
-                'autorepeat_rate': 20.0,
-        }]),
+        # Node(
+        #     package='joy', 
+        #     executable='joy_node', 
+        #     name='joy_node',
+        #     parameters=[{
+        #         'dev': joy_dev,
+        #         'deadzone': 0.3,
+        #         'autorepeat_rate': 20.0,
+        # }]),
 
         Node(
             package='teleop_twist_joy', 
