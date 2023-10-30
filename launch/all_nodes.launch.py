@@ -3,6 +3,7 @@ from launch.substitutions import TextSubstitution, LaunchConfiguration
 from launch_ros.actions import Node 
 from launch.actions import IncludeLaunchDescription, ExecuteProcess, DeclareLaunchArgument
 from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
+from launch.launch_description_sources import PythonLaunchDescriptionSource
 from ament_index_python.packages import get_package_share_directory
 
 import os
@@ -16,7 +17,7 @@ def check_can0_interface():
     interfaces = result.stdout
 
     # Check if can0 interface is present
-    if "can0" in interfaces:
+    if "lo" in interfaces:
         print("can0 interface present")
     else:
         raise ValueError('\n can0 interface is absent, please\n1.plug-in CAN-USB adaptor\n2.run\n \n sudo ip link set can0 up type can bitrate 250000 \n \n') 
@@ -48,11 +49,11 @@ def generate_launch_description():
             description='Use simulation (Gazebo) clock if true'),
 
 
-        Node(
-            package='agrorob_driver',
-            executable='agrorob_interface',
-            name='agrorob_interface',
-        ),
+        # Node(
+        #     package='agrorob_driver',
+        #     executable='agrorob_interface',
+        #     name='agrorob_interface',
+        # ),
 
         # Node(
         #     package='joy', 
@@ -84,12 +85,43 @@ def generate_launch_description():
         # ),
 
 
-        IncludeLaunchDescription(
-            XMLLaunchDescriptionSource(
-                os.path.join(get_package_share_directory('ros2_socketcan'),
-                             'launch/socket_can_bridge.launch.xml')
-            ),
+        # IncludeLaunchDescription(     # CAN module driver
+        #     XMLLaunchDescriptionSource(
+        #         os.path.join(get_package_share_directory('ros2_socketcan'),
+        #                      'launch/socket_can_bridge.launch.xml')
+        #     ),
+        # ),
+        # IncludeLaunchDescription(     # IMU driver
+        #     PythonLaunchDescriptionSource(
+        #             os.path.join(get_package_share_directory('bluespace_ai_xsens_mti_driver'),
+        #                         'launch/xsens_mti_node.launch.py')
+        #         ),
+        # ),
+        # IncludeLaunchDescription(     # GPS Moving base driver
+        #     PythonLaunchDescriptionSource(
+        #             os.path.join(get_package_share_directory('ublox_gps'),
+        #                         'launch/ublox_moving_base-launch.py')
+        #         ),
+        # ),
+        # IncludeLaunchDescription(     # GPS rover driver
+        #     PythonLaunchDescriptionSource(
+        #             os.path.join(get_package_share_directory('ublox_gps'),
+        #                         'launch/ublox_rover-launch.py')
+        #         ),
+        # ),
+
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments = ['--x', '1', '--y', '0', '--z', '1', '--yaw', '0', '--pitch', '0', '--roll', '0', '--frame-id', 'base_link', '--child-frame-id', 'ublox_rover']
         ),
+
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments = ['--x', '-1', '--y', '0', '--z', '1', '--yaw', '0', '--pitch', '0', '--roll', '0', '--frame-id', 'base_link', '--child-frame-id', 'ublox_moving_base']
+        ),
+
  
     ])
 
