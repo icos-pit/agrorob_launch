@@ -110,6 +110,13 @@ def generate_launch_description():
                 ),
         ),
 
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('ntrip_client'), 
+                             'ntrip_client_launch.py')
+                ),
+        ),
+
         Node(
             package='tf2_ros',
             executable='static_transform_publisher',
