@@ -55,15 +55,15 @@ def generate_launch_description():
             name='agrorob_interface',
         ),
 
-        # Node(
-        #     package='joy', 
-        #     executable='joy_node', 
-        #     name='joy_node',
-        #     parameters=[{
-        #         'dev': joy_dev,
-        #         'deadzone': 0.3,
-        #         'autorepeat_rate': 20.0,
-        # }]),
+        Node(
+            package='joy', 
+            executable='joy_node', 
+            name='joy_node',
+            parameters=[{
+                'dev': joy_dev,
+                'deadzone': 0.3,
+                'autorepeat_rate': 20.0,
+        }]),
 
         Node(
             package='teleop_twist_joy', 
@@ -85,12 +85,7 @@ def generate_launch_description():
         # ),
 
 
-        IncludeLaunchDescription(     # CAN module driver
-            XMLLaunchDescriptionSource(
-                os.path.join(get_package_share_directory('ros2_socketcan'),
-                             'launch/socket_can_bridge.launch.xml')
-            ),
-        ),
+        
         IncludeLaunchDescription(     # IMU driver
             PythonLaunchDescriptionSource(
                     os.path.join(get_package_share_directory('bluespace_ai_xsens_mti_driver'),
@@ -115,6 +110,12 @@ def generate_launch_description():
                 os.path.join(get_package_share_directory('ntrip_client'), 
                              'ntrip_client_launch.py')
                 ),
+        ),
+        IncludeLaunchDescription(     # CAN module driver
+            XMLLaunchDescriptionSource(
+                os.path.join(get_package_share_directory('ros2_socketcan'),
+                             'launch/socket_can_bridge.launch.xml')
+            ),
         ),
 
         Node(
