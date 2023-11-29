@@ -130,6 +130,12 @@ def generate_launch_description():
             arguments = ['--x', '-1', '--y', '0', '--z', '1', '--yaw', '0', '--pitch', '0', '--roll', '0', '--frame-id', 'base_link', '--child-frame-id', 'ublox_moving_base']
         ),
 
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments = ['--x', '0', '--y', '0', '--z', '0', '--yaw', '-0.575', '--pitch', '0', '--roll', '0', '--frame-id', 'map', '--child-frame-id', 'odom']
+        ),
+
  
     ])
 
