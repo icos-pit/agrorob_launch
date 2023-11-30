@@ -55,15 +55,15 @@ def generate_launch_description():
             name='agrorob_interface',
         ),
 
-        Node(
-            package='joy', 
-            executable='joy_node', 
-            name='joy_node',
-            parameters=[{
-                'dev': joy_dev,
-                'deadzone': 0.3,
-                'autorepeat_rate': 20.0,
-        }]),
+        # Node(
+        #     package='joy', 
+        #     executable='joy_node', 
+        #     name='joy_node',
+        #     parameters=[{
+        #         'dev': joy_dev,
+        #         'deadzone': 0.3,
+        #         'autorepeat_rate': 20.0,
+        # }]),
 
         Node(
             package='teleop_twist_joy', 
@@ -118,23 +118,23 @@ def generate_launch_description():
             ),
         ),
 
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            arguments = ['--x', '1', '--y', '0', '--z', '1', '--yaw', '0', '--pitch', '0', '--roll', '0', '--frame-id', 'base_link', '--child-frame-id', 'ublox_rover']
-        ),
+        # Node(
+        #     package='tf2_ros',
+        #     executable='static_transform_publisher',
+        #     arguments = ['--x', '1', '--y', '0', '--z', '1', '--yaw', '0', '--pitch', '0', '--roll', '0', '--frame-id', 'base_link', '--child-frame-id', 'ublox_rover']
+        # ),
 
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            arguments = ['--x', '-1', '--y', '0', '--z', '1', '--yaw', '0', '--pitch', '0', '--roll', '0', '--frame-id', 'base_link', '--child-frame-id', 'ublox_moving_base']
-        ),
+        # Node(
+        #     package='tf2_ros',
+        #     executable='static_transform_publisher',
+        #     arguments = ['--x', '-1', '--y', '0', '--z', '1', '--yaw', '0', '--pitch', '0', '--roll', '0', '--frame-id', 'base_link', '--child-frame-id', 'ublox_moving_base']
+        # ),
 
-        Node(
-            package='tf2_ros',
-            executable='static_transform_publisher',
-            arguments = ['--x', '0', '--y', '0', '--z', '0', '--yaw', '-0.575', '--pitch', '0', '--roll', '0', '--frame-id', 'map', '--child-frame-id', 'odom']
-        ),
+        # Node(
+        #     package='tf2_ros',
+        #     executable='static_transform_publisher',
+        #     arguments = ['--x', '0', '--y', '0', '--z', '0', '--yaw', '-0.575', '--pitch', '0', '--roll', '0', '--frame-id', 'map', '--child-frame-id', 'odom']
+        # ),
 
  
     ])
