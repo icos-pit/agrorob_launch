@@ -1,6 +1,7 @@
 from launch import LaunchDescription
 from launch.substitutions import TextSubstitution, LaunchConfiguration
 from launch_ros.actions import Node 
+import launch.actions
 from launch.actions import IncludeLaunchDescription, ExecuteProcess, DeclareLaunchArgument
 from launch_xml.launch_description_sources import XMLLaunchDescriptionSource
 from launch.launch_description_sources import PythonLaunchDescriptionSource
@@ -48,35 +49,41 @@ def generate_launch_description():
             default_value='false',
             description='Use simulation (Gazebo) clock if true'),
 
+        launch.actions.TimerAction(
+        period=5.0,
+        actions=[
+            Node(
+            package='joy', 
+            executable='joy_node', 
+            name='joy_node',
+            parameters=[{
+                'dev': joy_dev,
+                'deadzone': 0.3,
+                'autorepeat_rate': 20.0,}]
+            ),
+        ]),
 
-        Node(
-            package='agrorob_driver',
-            executable='agrorob_interface',
-            name='agrorob_interface',
-        ),
-
-        # Node(
-        #     package='joy', 
-        #     executable='joy_node', 
-        #     name='joy_node',
-        #     parameters=[{
-        #         'dev': joy_dev,
-        #         'deadzone': 0.3,
-        #         'autorepeat_rate': 20.0,
-        # }]),
-
-        Node(
+        launch.actions.TimerAction(
+        period=5.0,
+        actions=[
+            Node(
             package='teleop_twist_joy', 
             executable='teleop_node',
             name='teleop_twist_joy_node', 
             parameters=[config_filepath],
             remappings={('/cmd_vel', LaunchConfiguration('joy_vel'))}
-        ),
+            ),
+        ]),
 
-        ExecuteProcess(
+
+        launch.actions.TimerAction(
+        period=5.0,
+        actions=[
+            ExecuteProcess(
             cmd=["ros2", "param", "set", "/teleop_twist_joy_node", "axis_angular.yaw", "3"],
             output='screen'
-        ),
+            ),
+        ]),
 
         ## uncomment if wheel turning oposite direction
         # ExecuteProcess(
@@ -118,23 +125,36 @@ def generate_launch_description():
             ),
         ),
 
-        # Node(
-        #     package='tf2_ros',
-        #     executable='static_transform_publisher',
-        #     arguments = ['--x', '1', '--y', '0', '--z', '1', '--yaw', '0', '--pitch', '0', '--roll', '0', '--frame-id', 'base_link', '--child-frame-id', 'ublox_rover']
-        # ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments = ['--x', '1', '--y', '0', '--z', '1', '--yaw', '0', '--pitch', '0', '--roll', '0', '--frame-id', 'base_link', '--child-frame-id', 'ublox_rover']
+        ),
 
-        # Node(
-        #     package='tf2_ros',
-        #     executable='static_transform_publisher',
-        #     arguments = ['--x', '-1', '--y', '0', '--z', '1', '--yaw', '0', '--pitch', '0', '--roll', '0', '--frame-id', 'base_link', '--child-frame-id', 'ublox_moving_base']
-        # ),
+        Node(
+            package='tf2_ros',
+            executable='static_transform_publisher',
+            arguments = ['--x', '-1', '--y', '0', '--z', '1', '--yaw', '0', '--pitch', '0', '--roll', '0', '--frame-id', 'base_link', '--child-frame-id', 'ublox_moving_base']
+        ),
 
         # Node(
         #     package='tf2_ros',
         #     executable='static_transform_publisher',
         #     arguments = ['--x', '0', '--y', '0', '--z', '0', '--yaw', '-0.575', '--pitch', '0', '--roll', '0', '--frame-id', 'map', '--child-frame-id', 'odom']
         # ),
+
+
+        launch.actions.TimerAction(
+        period=5.0,
+        actions=[
+           Node(
+            package='agrorob_driver',
+            executable='agrorob_interface',
+            name='agrorob_interface',
+            ),
+        ]),
+
+    
 
  
     ])
